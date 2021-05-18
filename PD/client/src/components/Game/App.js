@@ -1,6 +1,23 @@
 import React, { useState, useCallback, useRef } from 'react';
 import produce from 'immer';
-
+import { shape1, shape2, shape3 } from './Shape.js';
+import { gql, useQuery, useLazyQuery, useMutation } from '@apollo/client';
+import { ButtonW, ButtonPlace } from './App.style';
+const UPDATE_USER_GRID = gql`
+  mutation updateUserGrid($id: ID!, $grid: String) {
+    updateUserGrid(id: $id, grid: $grid) {
+      id
+      grid
+    }
+  }
+`;
+const GET_GRID_BY_ID = gql`
+  query getGridByID($id: ID!) {
+    getGridByID(id: $id) {
+      grid
+    }
+  }
+`;
 const Columns = 30;
 const numRows = 30;
 const rep = 5000;
@@ -16,7 +33,8 @@ const neighborDir = [
   [0, 1],
   [0, -1],
 ];
-
+var this_id = window.sessionStorage.id;
+let QueryGrid = [];
 const generateBlankGrid = () => {
   const rows = [];
   for (let i = 0; i < numRows; i++) {
@@ -27,6 +45,34 @@ const generateBlankGrid = () => {
 };
 
 const App = () => {
+  const [getGridByID] = useLazyQuery(GET_GRID_BY_ID, {
+    onCompleted: (response) => {
+      console.log('fdd');
+
+      console.log(response.getGridByID[0].grid);
+      const x = response.getGridByID[0].grid.split('],');
+      for (let i = 0; i < x.length; i++) {
+        if (i == 0) {
+          x[i] = x[i].substr(2);
+        } else {
+          x[i] = x[i].substr(1);
+        }
+        QueryGrid.push(x[i].split(','));
+      }
+      for (let j = 0; j < QueryGrid.length; j++) {
+        for (let k = 0; k < QueryGrid[j].length; k++) {
+          QueryGrid[j][k] = parseInt(QueryGrid[j][k]);
+        }
+      }
+
+      setGrid(QueryGrid);
+    },
+  });
+
+  const [updateUserGrid] = useMutation(UPDATE_USER_GRID, {
+    onCompleted: (response) => {},
+  });
+
   const [grid, setGrid] = useState(() => {
     return generateBlankGrid();
   });
@@ -63,46 +109,47 @@ const App = () => {
   }, []);
   return (
     <>
-      <button
-        onClick={() => {
-          setRunning(!running);
-          if (!running) {
-            runningRef.current = true;
+      <ButtonPlace>
+        <ButtonW
+          onClick={() => {
+            setRunning(!running);
+            if (!running) {
+              runningRef.current = true;
 
-            for (var i = 0; i < rep; i++) {
-              (function (i) {
-                setTimeout(function () {
-                  runProgram();
-                }, 100 * i);
-              })(i);
+              for (var i = 0; i < rep; i++) {
+                (function (i) {
+                  setTimeout(function () {
+                    runProgram();
+                  }, 100 * i);
+                })(i);
+              }
             }
-          }
-        }}
-      >
-        {running ? 'Stop' : 'Start'}
-      </button>
-      <button
-        onClick={() => {
-          const rows = [];
-          for (let i = 0; i < numRows; i++) {
-            rows.push(
-              Array.from(Array(Columns), () => (Math.random() > dens ? 1 : 0))
-            );
-          }
+          }}
+        >
+          {running ? 'Stop' : 'Start'}
+        </ButtonW>
+        <ButtonW
+          onClick={() => {
+            const rows = [];
+            for (let i = 0; i < numRows; i++) {
+              rows.push(
+                Array.from(Array(Columns), () => (Math.random() > dens ? 1 : 0))
+              );
+            }
 
-          setGrid(rows);
-        }}
-      >
-        Seed
-      </button>
-      <button
-        onClick={() => {
-          setGrid(generateBlankGrid());
-        }}
-      >
-        Clear
-      </button>
-
+            setGrid(rows);
+          }}
+        >
+          Seed
+        </ButtonW>
+        <ButtonW
+          onClick={() => {
+            setGrid(generateBlankGrid());
+          }}
+        >
+          Clear
+        </ButtonW>
+      </ButtonPlace>
       <div
         style={{
           display: 'grid',
@@ -128,6 +175,61 @@ const App = () => {
           ))
         )}
       </div>
+      <ButtonPlace>
+        <ButtonW
+          onClick={() => {
+            getGridByID({
+              variables: {
+                id: this_id,
+              },
+            });
+
+            if (QueryGrid.length == 0) {
+            } else {
+              setGrid(QueryGrid);
+            }
+          }}
+        >
+          LoadGrid
+        </ButtonW>
+        <ButtonW
+          onClick={() => {
+            updateUserGrid({
+              variables: {
+                id: this_id,
+                grid: JSON.stringify(grid),
+              },
+            });
+            if (QueryGrid.length != 0) {
+              QueryGrid = grid;
+            }
+          }}
+        >
+          SaveGrid
+        </ButtonW>
+
+        <ButtonW
+          onClick={() => {
+            setGrid(shape1);
+          }}
+        >
+          Blinker
+        </ButtonW>
+        <ButtonW
+          onClick={() => {
+            setGrid(shape2);
+          }}
+        >
+          Glider
+        </ButtonW>
+        <ButtonW
+          onClick={() => {
+            setGrid(shape3);
+          }}
+        >
+          LWS Dakota
+        </ButtonW>
+      </ButtonPlace>
     </>
   );
 };

@@ -16,6 +16,10 @@ const resolvers = {
       );
       return User;
     },
+    getGridByID: async (_, { id }) => {
+      const User = await setQuery(`SELECT * FROM "User" WHERE "id"='${id}'`);
+      return User;
+    },
   },
   Mutation: {
     updateUser: async (_, { id, name, password }) => {
@@ -24,7 +28,12 @@ const resolvers = {
       );
       return User;
     },
-
+    updateUserGrid: async (_, { id, grid }) => {
+      const User = await setTransaction(
+        `UPDATE "User" SET "grid"='${grid}' WHERE "id"='${id}' RETURNING *`
+      );
+      return User;
+    },
     deleteUser: async (_, { id }) => {
       const User = await setTransaction(
         `DELETE FROM "User" WHERE "id"=${id} RETURNING *`
