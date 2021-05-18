@@ -1,12 +1,10 @@
-import React, { useState, useCallback, useRef } from "react";
-import produce from "immer";
-
+import React, { useState, useCallback, useRef } from 'react';
+import produce from 'immer';
 
 const Columns = 30;
 const numRows = 30;
-const rep=5000;
-const dens=0.7;
-
+const rep = 5000;
+const dens = 0.7;
 
 const neighborDir = [
   [1, 1],
@@ -16,7 +14,7 @@ const neighborDir = [
   [1, -1],
   [-1, 1],
   [0, 1],
-  [0, -1]
+  [0, -1],
 ];
 
 const generateBlankGrid = () => {
@@ -28,22 +26,21 @@ const generateBlankGrid = () => {
   return rows;
 };
 
-const App: React.FC = () => {
+const App = () => {
   const [grid, setGrid] = useState(() => {
     return generateBlankGrid();
   });
   const [running, setRunning] = useState(false);
   const runningRef = useRef(running);
   runningRef.current = running;
-  
-  const runProgram = useCallback(() => {
 
+  const runProgram = useCallback(() => {
     if (!runningRef.current) {
-        return;   
+      return;
     }
 
-    setGrid(g => {
-      return produce(g, newGrid => {    
+    setGrid((g) => {
+      return produce(g, (newGrid) => {
         for (let i = 0; i < numRows; i++) {
           for (let k = 0; k < Columns; k++) {
             let neighbors = 0;
@@ -60,8 +57,8 @@ const App: React.FC = () => {
               newGrid[i][k] = 1;
             }
           }
-        }      
-      });    
+        }
+      });
     });
   }, []);
   return (
@@ -70,17 +67,19 @@ const App: React.FC = () => {
         onClick={() => {
           setRunning(!running);
           if (!running) {
-            runningRef.current = true; 
-            
+            runningRef.current = true;
+
             for (var i = 0; i < rep; i++) {
-              (function(i) {
-                setTimeout(function() { runProgram(); }, 100 * i);
+              (function (i) {
+                setTimeout(function () {
+                  runProgram();
+                }, 100 * i);
               })(i);
             }
           }
         }}
       >
-        {running ? "Stop" : "Start"}
+        {running ? 'Stop' : 'Start'}
       </button>
       <button
         onClick={() => {
@@ -103,18 +102,18 @@ const App: React.FC = () => {
       >
         Clear
       </button>
-      
+
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${Columns}, 20px)`
+          display: 'grid',
+          gridTemplateColumns: `repeat(${Columns}, 20px)`,
         }}
       >
         {grid.map((rows, i) =>
           rows.map((col, k) => (
-            <div             
+            <div
               onClick={() => {
-                const newGrid = produce(grid, newGrid => {
+                const newGrid = produce(grid, (newGrid) => {
                   newGrid[i][k] = grid[i][k] ? 0 : 1;
                 });
                 setGrid(newGrid);
@@ -122,8 +121,8 @@ const App: React.FC = () => {
               style={{
                 width: 20,
                 height: 20,
-                backgroundColor: grid[i][k] ? "green" : undefined,
-                border: "solid 1px black"
+                backgroundColor: grid[i][k] ? 'green' : undefined,
+                border: 'solid 1px black',
               }}
             />
           ))

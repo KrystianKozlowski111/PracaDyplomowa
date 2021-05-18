@@ -1,0 +1,37 @@
+{
+  "name": "graphql-sandbox",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node index.js",
+    "client-install": "npm install --prefix client",
+    "client": "cd ../client && npm start",
+    "dev": "concurrently \"npm start\" \"npm run client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com"
+  },
+  "homepage": "https://github.com",
+  "dependencies": {
+    "apollo-server": "^2.16.1",
+    "dbapi": "^0.2.1",
+    "graphql": "^15.3.0",
+    "jest": "^26.2.2",
+    "pg": "^8.6.0",
+    "ramda": "^0.27.1",
+    "react-device-detect": "^1.14.0"
+  },
+  "devDependencies": {
+    "apollo-server-testing": "^2.24.0",
+    "concurrently": "^5.3.0",
+    "nodemon": "^2.0.4"
+  }
+}
