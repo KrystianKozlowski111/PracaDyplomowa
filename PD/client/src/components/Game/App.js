@@ -47,9 +47,6 @@ const generateBlankGrid = () => {
 const App = () => {
   const [getGridByID] = useLazyQuery(GET_GRID_BY_ID, {
     onCompleted: (response) => {
-      console.log('fdd');
-
-      console.log(response.getGridByID[0].grid);
       const x = response.getGridByID[0].grid.split('],');
       for (let i = 0; i < x.length; i++) {
         if (i == 0) {
