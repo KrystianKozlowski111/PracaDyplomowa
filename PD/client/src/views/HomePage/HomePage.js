@@ -28,6 +28,16 @@ const DELETE_USER = gql`
     }
   }
 `;
+const GET_USERS = gql`
+  query getUsers {
+    getUsers {
+      id
+      admin
+      name
+      password
+    }
+  }
+`;
 const GET_POST_BY_PASSWORD_AND_NAME = gql`
   query getUserByNameAndPassword($name: String!, $password: String!) {
     getUserByNameAndPassword(name: $name, password: $password) {
@@ -41,7 +51,12 @@ const GET_POST_BY_PASSWORD_AND_NAME = gql`
 function HomePage() {
   const [state, setState] = useState([]);
   const [accountError, setAccountError] = useState(0);
-
+  const [getUsers, { data3 }] = useLazyQuery(GET_USERS, {
+    onCompleted: (response) => {
+      const { getUsers } = response;
+      setState(response);
+    },
+  });
   const [deleteUser] = useMutation(DELETE_USER, {
     onCompleted: (response) => {
       const { deleteUser } = response;
@@ -57,7 +72,19 @@ function HomePage() {
       window.location.reload();
     },
   });
+  const [deleteUserAdmin] = useMutation(DELETE_USER, {
+    onCompleted: (response) => {
+      const { deleteUser } = response;
 
+      if (state && state.getUsers && state.getUsers.length > 0) {
+        const array = state.getUsers.filter(
+          (item) => item.id !== deleteUser.id
+        );
+        setState({ getUsers: array });
+      }
+      window.location.reload();
+    },
+  });
   const [updateUser] = useMutation(UPDATE_USER, {
     onCompleted: (response) => {
       if (state && state.getUsers && state.getUsers.length > 0) {
@@ -127,7 +154,9 @@ function HomePage() {
     <>
       <Header />
       <Section
+        getUsers={getUsers}
         updateUser={updateUser}
+        deleteUserAdmin={deleteUserAdmin}
         deleteUser={deleteUser}
         getUserByNameAndPassword={getUserByNameAndPassword}
         accountError={accountError}

@@ -9,7 +9,7 @@ import { GlobalStyle } from './assets/Global.style';
 import System from './System.js';
 
 const httpLink = createHttpLink({
-  uri: 'http://localhost:4000',
+  uri: 'http://192.168.0.21:4000',
 });
 const client = new ApolloClient({
   link: httpLink,

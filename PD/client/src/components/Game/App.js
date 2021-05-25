@@ -165,7 +165,7 @@ const App = () => {
               style={{
                 width: 20,
                 height: 20,
-                backgroundColor: grid[i][k] ? 'green' : undefined,
+                backgroundColor: grid[i][k] ? '#004293' : undefined,
                 border: 'solid 1px black',
               }}
             />
