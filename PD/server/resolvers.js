@@ -9,6 +9,10 @@ const resolvers = {
       const User = await setQuery('SELECT * FROM "User"');
       return User;
     },
+    getGrids: async () => {
+      const User = await setQuery('SELECT * FROM "Grids"');
+      return User;
+    },
 
     getUserByNameAndPassword: async (_, { name, password }) => {
       const User = await setQuery(
@@ -17,7 +21,13 @@ const resolvers = {
       return User;
     },
     getGridByID: async (_, { id }) => {
-      const User = await setQuery(`SELECT * FROM "User" WHERE "id"='${id}'`);
+      const User = await setQuery(`SELECT * FROM "Grids" WHERE "id"='${id}'`);
+      return User;
+    },
+    getGridByUserID: async (_, { id }) => {
+      const User = await setQuery(
+        `SELECT * FROM "Grids" WHERE "userId"='${id}'`
+      );
       return User;
     },
   },
@@ -40,6 +50,12 @@ const resolvers = {
       );
       return User;
     },
+    deleteGrid: async (_, { id }) => {
+      const Grid = await setTransaction(
+        `DELETE FROM "Grids" WHERE "id"=${id} RETURNING *`
+      );
+      return Grid;
+    },
     addUser: async (_, { name, password }) => {
       const users = await setQuery('SELECT * FROM "User"');
       const exist = await setQuery('SELECT name FROM "User"');
@@ -51,6 +67,21 @@ const resolvers = {
           `INSERT INTO "User" ("id", "name","password","admin") VALUES ('${id}', '${name}', '${password}','false') RETURNING *`
         );
         return User;
+      } else {
+        throw new ApolloError('NAME_ALREADY_EXISTS', 400);
+      }
+    },
+    addGrid: async (_, { name, grid, userId, isShared }) => {
+      const grids = await setQuery('SELECT * FROM "Grids"');
+      const exist = await setQuery('SELECT name FROM "Grids"');
+      const NameTaken = exist.find((existed) => existed['name'] === name);
+      console.log(NameTaken);
+      if (NameTaken == undefined) {
+        let id = grids.length + 1;
+        const Grid = await setTransaction(
+          `INSERT INTO "Grids" ("id", "grid", "name","userId","isShared") VALUES ('${id}', '${grid}','${name}', '${userId}','${isShared}') RETURNING *`
+        );
+        return Grid;
       } else {
         throw new ApolloError('NAME_ALREADY_EXISTS', 400);
       }

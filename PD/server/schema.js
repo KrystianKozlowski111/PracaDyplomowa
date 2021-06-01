@@ -8,10 +8,18 @@ const typeDefs = gql`
     admin: Boolean!
     grid: String
   }
-
+  type Grid {
+    id: ID!
+    userId: ID!
+    name: String!
+    grid: String!
+    isShared: Boolean!
+  }
   type Query {
     getUsers: [User]
-    getGridByID(id: ID!): [User]
+    getGrids: [Grid]
+    getGridByID(id: ID!): [Grid]
+    getGridByUserID(userId: ID!): [Grid]
     getUserByID(id: ID!): [User]
     getUserByNameAndPassword(name: String!, password: String!): [User]
   }
@@ -19,7 +27,14 @@ const typeDefs = gql`
     updateUser(id: ID!, name: String, password: String): [User]
     updateUserGrid(id: ID!, grid: String): [User]
     deleteUser(id: ID!): [User]
+    deleteGrid(id: ID!): [Grid]
     addUser(name: String!, password: String!): [User]
+    addGrid(
+      userId: ID!
+      name: String!
+      grid: String!
+      isShared: Boolean!
+    ): [Grid]
   }
 `;
 

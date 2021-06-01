@@ -7,6 +7,7 @@ export const Wrapper = styled.div`
   height: 100%;
   background-color: ${Colors.white};
   padding: 50px 30px;
+  box-sizing: border-box;
   ${Media.md`
     padding: 20px 10px;
   `}
